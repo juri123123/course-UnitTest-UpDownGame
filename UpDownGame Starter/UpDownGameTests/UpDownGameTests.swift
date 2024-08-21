@@ -19,6 +19,28 @@ class UpDownGameTests: XCTestCase {
         sut = nil
     }
     
+    func test_randomValue로_3을받을때() {
+        //given
+        let promise = expectation(description: "")
+        let url = URL(string: "http://www.randomnumberapi.com/api/v1.0/random?min=1&max=30&count=1")!
+        let data = "[3]".data(using: .utf8)
+        let response = HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil)
+        // DummyData 초기화
+        let dummy = DummyData(data: data, response: response, error: nil)
+        // UpDownGame에 의존성 주입할 StubURLSession 초기화
+        let stubURLSession = StubURLSession(dummy: dummy)
+        
+        sut.urlSession = stubURLSession
+        
+        //when
+        sut.reset {
+            XCTAssertEqual(self.sut.randomValue, 3)
+            promise.fulfill()
+        }
+        
+        wait(for: [promise], timeout: 10)
+    }
+    
     func test_compareValue_hitNUmber가_randomValue보다작을때() {
         //given
         let hitInput = 10
